@@ -132,3 +132,13 @@ To disable ZMK Studio support, comment out these two lines (lines 7-8) in `build
   # snippet: studio-rpc-usb-uart
   # cmake-args: -DCONFIG_ZMK_STUDIO=y
 ```
+
+### Studio Unlock
+
+To unlock ZMK Studio for configuration, press all three right thumb keys simultaneously:
+
+- **RET** (Return/Enter)
+- **SYMBOLS** (hold) / **SPACE** (tap)
+- **RAISE** (hold) / **BSPC** (tap)
+
+This combo is defined in [`config/charybdis.keymap`](/config/charybdis.keymap) as `combo_studio_unlock` using key positions 53, 54, and 55.
