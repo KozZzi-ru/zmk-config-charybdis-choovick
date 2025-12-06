@@ -491,7 +491,7 @@ Built firmware files are automatically copied to `manual_build/artifacts/output/
    b) **YADS Prospector Dongle (Seeeduino XIAO BLE)**:
       - Flash `settings_reset-nice_nano_v2-zmk.uf2` to **both** keyboards
       - Flash `settings_reset-seeeduino_xiao_ble-zmk.uf2` to the **dongle**
-      - Flash `yads_prospector dongle_screen-seeeduino_xiao_ble-zmk.uf2` to the dongle
+      - Flash `bwshockley_prospector dongle_screen-seeeduino_xiao_ble-zmk.uf2` to the dongle
 
    c) **Nice!Nano Dongle (Nice!Nano v2)**
       - Flash `settings_reset-nice_nano_v2-zmk.uf2` to **all three** devices (left, right, dongle)
