@@ -60,7 +60,9 @@ Here is the BOM for this project: [BOM Charybdis 4x6 Wireless](/docs/bom/readme.
 **Option 2: Nice!Nano Dongle (Nice!Nano v2)**
 
 - 1x Nice!Nano v2 (nRF52840) - Dongle central
-- 1x 128x32 OLED Display (SSD1306, I2C) - Generic 0.91" OLED module
+- 1x OLED Display (SSD1306, I2C) - Generic OLED module
+  - **128x32** (0.91" OLED) - Use `dongle_nice_32` shield
+  - **128x64** (0.96" OLED) - Use `dongle_nice_64` shield
 - Uses [zmk-dongle-display](https://github.com/englmaxi/zmk-dongle-display) module
 
 **Option 3: YADS Prospector Dongle (Seeeduino XIAO BLE)**
@@ -104,10 +106,15 @@ zmk-config-charybdis/
 │   │       │   ├── charybdis_right_standalone.overlay    # Right side overlay (standalone mode)
 │   │       │   ├── dongle_charybdis_right.conf           # Symlink → charybdis_right_standalone.conf
 │   │       │   ├── dongle_charybdis_right.overlay        # Right side overlay (dongle mode)
+│   │       │   ├── dongle_common.dtsi                    # Base shared dongle config (all variants)
+│   │       │   ├── dongle_nice_common.dtsi               # Nice!Nano platform common config
+│   │       │   ├── dongle_prospector_common.dtsi         # Prospector platform common config
 │   │       │   ├── dongle_prospector.conf                # Prospector dongle Kconfig options
 │   │       │   ├── dongle_prospector.overlay             # Prospector dongle device tree overlay
-│   │       │   ├── dongle_nice.conf                      # Nice!Nano dongle Kconfig options
-│   │       │   ├── dongle_nice.overlay                   # Nice!Nano dongle device tree overlay
+│   │       │   ├── dongle_nice_32.conf                   # Nice!Nano dongle 32px Kconfig options
+│   │       │   ├── dongle_nice_32.overlay                # Nice!Nano dongle 32px device tree overlay
+│   │       │   ├── dongle_nice_64.conf                   # Nice!Nano dongle 64px Kconfig options
+│   │       │   ├── dongle_nice_64.overlay                # Nice!Nano dongle 64px device tree overlay
 │   │       │   ├── Kconfig.defconfig                     # Shield Kconfig definitions
 │   │       │   └── Kconfig.shield                        # Shield Kconfig options
 │   │       └── tester_pro_micro/    # Pro Micro GPIO tester shield
@@ -162,7 +169,12 @@ zmk-config-charybdis/
 - **`charybdis_left.overlay`**: Left side configuration (same for both modes)
 - **`charybdis_right_standalone.overlay`**: Right side for **standalone mode** (processes trackball locally)
 - **`dongle_charybdis_right.overlay`**: Right side for **dongle mode** (forwards trackball to dongle)
+- **`dongle_common.dtsi`**: Base shared configuration for all dongle variants (matrix, input split, physical layout)
+- **`dongle_nice_common.dtsi`**: Nice!Nano platform-specific common config (KSCAN, I2C)
+- **`dongle_prospector_common.dtsi`**: Prospector platform-specific common config (KSCAN)
 - **`dongle_prospector.overlay`**: Prospector dongle configuration (receives trackball from right peripheral)
+- **`dongle_nice_32.overlay`**: Nice!Nano dongle with 128x32 OLED display
+- **`dongle_nice_64.overlay`**: Nice!Nano dongle with 128x64 OLED display
 - **`config/west.yml`**: Defines external dependencies (see West.yml section below)
 
 ## Operating Modes
@@ -183,7 +195,9 @@ In dongle mode, a dedicated dongle acts as the central device with a display:
 - **Right keyboard**: Peripheral with trackball (Nice!Nano v2)
 - **Dongle Options**:
   - **Prospector**: Seeeduino XIAO BLE with custom Prospector display module
-  - **Nice!Nano**: Nice!Nano v2 with generic 128x32 OLED (I2C)
+  - **Nice!Nano**: Nice!Nano v2 with generic OLED (I2C)
+    - **128x32 OLED** (0.91") - Use `dongle_nice_32` shield
+    - **128x64 OLED** (0.96") - Use `dongle_nice_64` shield
 - **Connection**: Left → Dongle ← Right, Dongle → Host Computer
 - **Pairing Order**: Pair left keyboard first, then right keyboard for correct battery display
 - **Power**: USB powered (no sleep mode needed)
@@ -210,7 +224,10 @@ In dongle mode, a dedicated dongle acts as the central device with a display:
 
 #### Nice!Nano Dongle (Nice!Nano v2)
 
-- **Display**: 128x32 OLED (SSD1306) via I2C
+Two variants are available based on OLED display size:
+
+**128x32 OLED (dongle_nice_32):**
+- **Display**: 128x32 OLED (SSD1306) via I2C (0.91" module)
 - **Active layer name** with center alignment and scrolling support
 - **Peripheral battery levels** (left + right keyboards)
 - **HID indicators** (CAPS, NUM, SCROLL lock)
@@ -218,6 +235,16 @@ In dongle mode, a dedicated dongle acts as the central device with a display:
 - **Active modifiers display** (Shift, Ctrl, Alt, GUI)
 - **Display timeout**: 5 minutes (configurable)
 - **Optimized for 32px height**: Bongo cat disabled, modifiers optional
+
+**128x64 OLED (dongle_nice_64):**
+- **Display**: 128x64 OLED (SSD1306) via I2C (0.96" module)
+- **Active layer name** with center alignment and scrolling support
+- **Peripheral battery levels** (left + right keyboards)
+- **HID indicators** (CAPS, NUM, SCROLL lock)
+- **Output status** (USB/BLE connection)
+- **Active modifiers display** (Shift, Ctrl, Alt, GUI)
+- **Bongo cat** enabled (more vertical space available)
+- **Display timeout**: 5 minutes (configurable)
 
 **Wiring (Nice!Nano to OLED):**
 
@@ -290,7 +317,7 @@ projects:
   - **Purpose**: Generic OLED display module for Nice!Nano dongle (128x32/128x64 displays)
   - **Source**: `englmaxi` remote
   - **Version**: `main` branch
-  - **Note**: Provides the `dongle_display` shield for generic I2C OLED displays (SSD1306), optimized for 128x32 displays with configurable widgets
+  - **Note**: Provides the `dongle_display` shield for generic I2C OLED displays (SSD1306). Supports both 128x32 and 128x64 displays with configurable widgets. Use `dongle_nice_32` shield for 32px displays or `dongle_nice_64` shield for 64px displays.
 
 ### Self Section
 
@@ -405,11 +432,20 @@ ZMK Studio support is enabled by default via the build configuration in [`build.
   cmake-args: -DCONFIG_ZMK_STUDIO=y
 ```
 
-**Dongle mode** - Prospector dongle has ZMK Studio:
+**Dongle mode** - Multiple dongles have ZMK Studio:
 
+**Prospector dongle:**
 ```yaml
 - board: seeeduino_xiao_ble
   shield: dongle_prospector prospector_adapter
+  snippet: studio-rpc-usb-uart
+  cmake-args: -DCONFIG_ZMK_STUDIO=y
+```
+
+**Nice!Nano dongles (both 32px and 64px):**
+```yaml
+- board: nice_nano_v2
+  shield: dongle_nice_32 dongle_display  # or dongle_nice_64
   snippet: studio-rpc-usb-uart
   cmake-args: -DCONFIG_ZMK_STUDIO=y
 ```
@@ -436,6 +472,8 @@ Push changes to your repository and GitHub Actions will automatically build firm
 - `charybdis_right_standalone-nice_nano_v2-zmk.uf2`
 - `dongle_charybdis_right-nice_nano_v2-zmk.uf2`
 - `dongle_prospector prospector_adapter-seeeduino_xiao_ble-zmk.uf2`
+- `dongle_nice_32 dongle_display-nice_nano_v2-zmk.uf2`
+- `dongle_nice_64 dongle_display-nice_nano_v2-zmk.uf2`
 - `tester_pro_micro-nice_nano_v2-zmk.uf2`
 - `settings_reset-nice_nano_v2-zmk.uf2`
 - `settings_reset-seeeduino_xiao_ble-zmk.uf2`
@@ -450,10 +488,12 @@ The interactive build script provides options for:
 2. **charybdis_right_standalone** - Right keyboard for standalone mode (Nice!Nano v2)
 3. **dongle_charybdis_right** - Right keyboard for dongle mode (Nice!Nano v2)
 4. **dongle_prospector prospector_adapter** - Dongle with display (Seeeduino XIAO BLE)
-5. **tester_pro_micro** - GPIO pin tester for Pro Micro-compatible boards
-6. **settings_reset** - Reset stored settings
+5. **dongle_nice_32 dongle_display** - Nice!Nano dongle with 128x32 OLED
+6. **dongle_nice_64 dongle_display** - Nice!Nano dongle with 128x64 OLED
+7. **tester_pro_micro** - GPIO pin tester for Pro Micro-compatible boards
+8. **settings_reset** - Reset stored settings
 
-⚠️ **Known Issue:** Option 4 (dongle_prospector with prospector_adapter) currently fails in local builds due to module patching requirements. Options 1-3, 5, and 6 work correctly. **Use GitHub Actions for dongle builds** or consider using [act](https://github.com/nektos/act) to run the GitHub Actions workflow locally.
+⚠️ **Known Issue:** Option 4 (dongle_prospector with prospector_adapter) currently fails in local builds due to module patching requirements. Options 1-3, 5-8 work correctly. **Use GitHub Actions for Prospector dongle builds** or consider using [act](https://github.com/nektos/act) to run the GitHub Actions workflow locally.
 
 Built firmware files are automatically copied to `manual_build/artifacts/output/` with descriptive names.
 
@@ -493,7 +533,9 @@ Built firmware files are automatically copied to `manual_build/artifacts/output/
 
    c) **Nice!Nano Dongle (Nice!Nano v2)**
       - Flash `settings_reset-nice_nano_v2-zmk.uf2` to **all three** devices (left, right, dongle)
-      - Flash `dongle_nice dongle_display-nice_nano_v2-zmk.uf2` to the dongle
+      - Flash the appropriate dongle firmware to the dongle:
+        - **128x32 OLED**: `dongle_nice_32 dongle_display-nice_nano_v2-zmk.uf2`
+        - **128x64 OLED**: `dongle_nice_64 dongle_display-nice_nano_v2-zmk.uf2`
       - Connect OLED display to dongle via I2C (SDA→Pin 2, SCL→Pin 3)
 
 2. Flash `charybdis_left-nice_nano_v2-zmk.uf2` to the left keyboard

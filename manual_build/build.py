@@ -90,8 +90,9 @@ def build_docker_command(build_config, workspace_path):
     west_commands.append("west zephyr-export")
 
     # Construct west build command (quote build_dir in case shield name has spaces)
+    # Use --pristine to automatically clean build directory (prevents board mismatch errors)
     build_cmd_parts = [
-        f'west build -s zmk/app -d "{build_dir}" -b {board}'
+        f'west build -s zmk/app -d "{build_dir}" -b {board} --pristine'
     ]
 
     # Add snippet if present (BEFORE the -- separator, as a west flag)

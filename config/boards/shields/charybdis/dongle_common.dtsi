@@ -9,7 +9,6 @@
 	chosen {
 		zmk,kscan = &kscan0;
 		zmk,physical-layout = &charybdis_6col_layout;
-		zephyr,display = &oled;
 	};
 
 	default_transform: keymap_transform_0 {
@@ -23,12 +22,6 @@
 			RC(3,0) RC(3,1) RC(3,2) RC(3,3) RC(3,4) RC(3,5)  RC(3,6) RC(3,7) RC(3,8) RC(3,9) RC(3,10) RC(3,11)
 			        RC(4,1) RC(4,2) RC(4,3) RC(4,4) RC(4,5)  RC(4,6)         RC(4,8)         RC(4,10)
 		>;
-	};
-
-	kscan0: kscan {
-		compatible = "zmk,kscan-gpio-direct";
-		label = "KSCAN";
-		input-gpios = <&pro_micro 0 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
 	};
 
 	// Receive trackball input from right peripheral
@@ -108,24 +101,6 @@
 			, <&key_physical_attrs 100 100 1067  414 (-1500)  1102   790>
 			, <&key_physical_attrs 100 100 1052  420 (-3000)  1102   790>
 			;
-	};
-};
-
-// I2C for OLED on nice!nano
-&pro_micro_i2c {
-	status = "okay";
-
-	oled: ssd1306@3c {
-		compatible = "solomon,ssd1306fb";
-		reg = <0x3c>;
-		width = <128>;
-		height = <32>;
-		segment-offset = <0>;
-		page-offset = <0>;
-		display-offset = <0>;
-		multiplex-ratio = <31>;
-		com-sequential;
-		prechargep = <0x22>;
 	};
 };
 
